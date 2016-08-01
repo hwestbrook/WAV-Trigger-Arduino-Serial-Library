@@ -28,19 +28,6 @@
 #ifndef WAVTRIGGER_H
 #define WAVTRIGGER_H
 
-<<<<<<< HEAD
-=======
-// ==================================================================
-// The following defines are used to control which serial class is
-//  used. Uncomment only the one you wish to use. If all of them are
-//  commented out, the library will use Hardware Serial
-#define __WT_USE_ALTSOFTSERIAL__
-// #define __WT_USE_SERIAL1__
-//#define __WT_USE_SERIAL2__
-//#define __WT_USE_SERIAL3__
-// ==================================================================
-
->>>>>>> 777f954abe3362ed69b427b619627daeb2548858
 #define CMD_GET_VERSION					1
 #define CMD_GET_SYS_INFO				2
 #define CMD_TRACK_CONTROL				3
