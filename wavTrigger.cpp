@@ -16,7 +16,11 @@
 
 // **************************************************************
 void wavTrigger::start(void) {
-  WTSerial.begin(57600);
+  // _serial->begin(57600);
+}
+
+void wavTrigger::setSerial(Stream &serial) {
+	_serial = &serial;
 }
 
 // **************************************************************
@@ -49,8 +53,7 @@ uint16_t* wavTrigger::returnTracksPlaying(void) {
 // **************************************************************
 void wavTrigger::response(uint8_t responseCommand) {
 
-    WTSerial.flush();
-    WTSerial.clear();
+    _serial->flush();
 
     uint8_t txbuf[5];
 
@@ -59,7 +62,7 @@ void wavTrigger::response(uint8_t responseCommand) {
     txbuf[2] = 0x05;
     txbuf[3] = responseCommand;
     txbuf[4] = EOM;
-    WTSerial.write(txbuf, 5);
+    _serial->write(txbuf, 5);
 
     wavTrigger::readResponse(2000);
 }
@@ -69,17 +72,17 @@ void wavTrigger::readResponse(unsigned long wait) {
 
   unsigned long stop = millis() + wait;
   while (
-    WTSerial.available() < 5 &&
+    _serial->available() < 5 &&
     millis() < stop
   ) {
     // wait until we have some data back, or timeout
   }
 
-  if (WTSerial.available() >= 5) {
+  if (_serial->available() >= 5) {
 
     uint8_t i = 0;
-    while (WTSerial.available()) {
-      packet[i] = WTSerial.read();
+    while (_serial->available()) {
+      packet[i] = _serial->read();
       if (packet[i] == EOM) {
         break;
       } else {
@@ -151,7 +154,7 @@ unsigned short vol;
   txbuf[4] = (uint8_t)vol;
   txbuf[5] = (uint8_t)(vol >> 8);
   txbuf[6] = EOM;
-  WTSerial.write(txbuf, 7);
+  _serial->write(txbuf, 7);
 }
 
 // **************************************************************
@@ -212,7 +215,7 @@ void wavTrigger::trackControl(int trk, int code) {
   txbuf[5] = (uint8_t)trk;
   txbuf[6] = (uint8_t)(trk >> 8);
   txbuf[7] = EOM;
-  WTSerial.write(txbuf, 8);
+  _serial->write(txbuf, 8);
 }
 
 // **************************************************************
@@ -225,7 +228,7 @@ void wavTrigger::stopAllTracks(void) {
   txbuf[2] = 0x05;
   txbuf[3] = CMD_STOP_ALL;
   txbuf[4] = EOM;
-  WTSerial.write(txbuf, 5);
+  _serial->write(txbuf, 5);
 }
 
 // **************************************************************
@@ -238,7 +241,7 @@ void wavTrigger::resumeAllInSync(void) {
   txbuf[2] = 0x05;
   txbuf[3] = CMD_RESUME_ALL_SYNC;
   txbuf[4] = EOM;
-  WTSerial.write(txbuf, 5);
+  _serial->write(txbuf, 5);
 }
 
 // **************************************************************
@@ -257,7 +260,7 @@ void wavTrigger::trackGain(int trk, int gain) {
   txbuf[6] = (uint8_t)vol;
   txbuf[7] = (uint8_t)(vol >> 8);
   txbuf[8] = EOM;
-  WTSerial.write(txbuf, 9);
+  _serial->write(txbuf, 9);
 }
 
 // **************************************************************
@@ -279,7 +282,7 @@ void wavTrigger::trackFade(int trk, int gain, int time, bool stopFlag) {
   txbuf[9] = (uint8_t)(time >> 8);
   txbuf[10] = stopFlag;
   txbuf[11] = EOM;
-  WTSerial.write(txbuf, 12);
+  _serial->write(txbuf, 12);
 }
 
 // **************************************************************
@@ -306,7 +309,7 @@ void wavTrigger::trackCrossFade(int trkFrom, int trkTo, int gain, int time) {
   txbuf[9] = (uint8_t)(time >> 8);
   txbuf[10] = 0x00;
   txbuf[11] = EOM;
-  WTSerial.write(txbuf, 12);
+  _serial->write(txbuf, 12);
 
   // Start a fade-out on the From track
   txbuf[0] = HEAD_1;
@@ -322,7 +325,7 @@ void wavTrigger::trackCrossFade(int trkFrom, int trkTo, int gain, int time) {
   txbuf[9] = (uint8_t)(time >> 8);
   txbuf[10] = 0x01;
   txbuf[11] = EOM;
-  WTSerial.write(txbuf, 12);
+  _serial->write(txbuf, 12);
 }
 
 // **************************************************************
@@ -339,5 +342,5 @@ void wavTrigger::samplerateOffset(int offset) {
   txbuf[4] = (uint8_t)off;
   txbuf[5] = (uint8_t)(off >> 8);
   txbuf[6] = EOM;
-  WTSerial.write(txbuf, 7);
+  _serial->write(txbuf, 7);
 }
